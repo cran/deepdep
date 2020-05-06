@@ -29,7 +29,11 @@
 #' plot_dependencies(dd2, "circular")
 #'
 #' \donttest{
-#' plot_dependencies("deepdep", label_percentage = 0.5, depth = 2, local = TRUE)
+#' #:# use local packages
+#' plot_dependencies("deepdep", depth = 2, local = TRUE)
+#'
+#' #:# show grand_total download count
+#' plot_dependencies("deepdep", show_downloads = TRUE)
 #' }
 #'
 #' @importFrom ggforce geom_circle
@@ -59,7 +63,7 @@ plot_dependencies.default <- function(x, type = "circular", same_level = FALSE, 
 plot_dependencies.character <- function(x, type = "circular", same_level = FALSE, reverse = FALSE,
                                       label_percentage = 1, show_version = FALSE, show_downloads = FALSE, ...) {
   package_name <- NULL
-  if (show_downloads == TRUE)
+  if (show_downloads == TRUE || label_percentage < 1)
     dd <- deepdep(x, downloads = TRUE, ...)
   else dd <- deepdep(x, ...)
   plot_dependencies(dd, type, same_level, reverse, label_percentage, show_version, show_downloads)
@@ -73,6 +77,7 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
   labeled <- NULL
   node1.name <- NULL
   node2.name <- NULL
+  name <- NULL
 
 
   if ((label_percentage < 1 || show_downloads == TRUE) && !("grand_total" %in% colnames(x)))
@@ -93,7 +98,7 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
     G <- graph_from_data_frame(x)
   }
 
-  G <- add_layers_to_vertices(G)
+  G <- add_layers_to_vertices(G, x)
   if (!same_level) {
     G <- delete_edges_within_layer(G)
   }
@@ -112,7 +117,7 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
     tree = ggraph(G, "tree") +
       theme_void(),
     circular = ggraph(graph = G, layout = "focus", focus = 1) +
-      draw_circle(use = "focus", max.circle = max(V(G)$layer - 1), col = "#252525") +
+      draw_circle(use = "focus", max.circle = max(V(G)$layer), col = "#252525") +
       theme_void() +
       coord_fixed())
 
@@ -121,6 +126,7 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
                                 start_cap = label_rect(node1.name),
                                 edge_width = type,
                                 edge_linetype = type),
+                                #edge_color = reverse),
                             arrow = arrow(length = unit(0.5, 'lines'),
                                           ends = "first",
                                           type = "closed",
@@ -133,10 +139,11 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
 
   g <- g + geom_node_point(aes(fill = factor(layer)),
                            size = 3, shape = 21, show.legend = FALSE) +
-    geom_node_label(aes(label = ifelse(labeled, names(V(G)), ""), fill = factor(layer)),
+    geom_node_label(data = function(g) g[g[, "labeled"], ],
+                    aes(label = name, fill = factor(layer)),
                     show.legend = FALSE,
                     label.padding = unit(0.28, "lines")) +
-    scale_fill_manual(values = get_nodefill_default_scale()) +
+    default_nodefill_scale(length(levels(factor(V(G)$layer)))) +
     labs(caption = paste0("Plot made with deepdep v",
                           packageVersion("deepdep"),
                           " on ", format(Sys.time(), usetz = FALSE))
@@ -150,8 +157,8 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
 #' @noRd
 #'
 #' @param G An \code{igraph} object.
-add_layers_to_vertices <- function(G) {
-  V(G)$layer <- distances(G, v = V(G)[1]) + 1
+add_layers_to_vertices <- function(G, x) {
+  V(G)$layer <- c(0, x[match(V(G)$name[-1], x$name), "dest_level"])
   G
 }
 
@@ -170,9 +177,14 @@ delete_edges_within_layer <- function(G) {
 #'
 #' @param G An \code{igraph} object.
 delete_reverse_edges <- function(G) {
+  # rev_inds <-
+  #   head_of(G, E(G))$layer < tail_of(G, E(G))$layer
   edges_to_delete <- E(G)[
     head_of(G, E(G))$layer < tail_of(G, E(G))$layer]
   delete_edges(G, edges_to_delete)
+  # E(G)$reverse <- FALSE
+  # E(G)$reverse[rev_inds] <- TRUE
+  # G
 }
 
 get_edgewidth_default_scale <- function() {
@@ -191,12 +203,16 @@ get_edgelinetype_default_scale <- function() {
     LinkingTo = "dotdash")
 }
 
-get_nodefill_default_scale <- function() {
-  c("#5fc8f4",
-    "#a1ce40",
-    "#fde74c",
-    "#ff8330",
-    "#e55934")
+default_nodefill_scale <- function(num_colors) {
+  if (num_colors <= 7)
+    scale_fill_manual(values = c("#5fc8f4",
+                                 "#a1ce40",
+                                 "#fde74c",
+                                 "#ff8330",
+                                 "#e55934",
+                                 "#7b5e7b",
+                                 "#664e4c"))
+  else scale_fill_discrete()
 }
 
 add_version_to_name <- function(x) {

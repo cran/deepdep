@@ -39,43 +39,39 @@ deepdep <- function(package, depth = 1, downloads = FALSE, bioc = FALSE, local =
   check_package_name(package, bioc, local)
 
   pkg_dep <- get_dependencies(package, downloads, bioc, local, dependency_type)
-  pkg_dep_names <- pkg_dep$name
 
   # check if there are any dependencies
-  if (length(pkg_dep_names)) {
-    ret <- data.frame(origin = attr(pkg_dep, "package_name"), pkg_dep)
+  if (length(pkg_dep$name) > 0) {
+    ret <- data.frame(origin = package, pkg_dep, origin_level = 0, dest_level = 1)
   } else {
-    ret <- data.frame(origin = character(), pkg_dep)
+    ret <- data.frame(origin = character(), pkg_dep, origin_level = numeric(), dest_level = numeric())
   }
 
-  pkg_dep_dep_names <- c()
-  already_computed_names <- c(package)
-
   if (depth > 1) {
-    for (i in 2:depth) {
-      for (name in pkg_dep_names) {
-        pkg_dep_dep <- get_dependencies(name, downloads, bioc, local, dependency_type)
+    already_subdeped <- package
+    to_subdep <- pkg_dep$name
 
-        if (length(pkg_dep_dep$name) != 0) {
-          # find all unique dependency names (for next depth level)
-          pkg_dep_dep_names <- union(pkg_dep_dep_names, pkg_dep_dep$name)
+    for (level in 2:depth) {
+      added <- do.call(rbind, lapply(to_subdep, function(pkg_name) {
+        pkg_subdep <- get_dependencies(pkg_name, downloads, bioc, local, dependency_type)
+        if (length(pkg_subdep$name) > 0) {
+          upper_layer_origin <- ret[match(pkg_subdep$name, ret$origin), "origin_level"]
+          upper_layer_dest <- ret[match(pkg_subdep$name, ret$name), "dest_level"]
+          cb <- ifelse(is.na(upper_layer_origin),
+                       ifelse(is.na(upper_layer_dest), level,
+                              upper_layer_dest),
+                       upper_layer_origin)
 
-          if (length(pkg_dep_dep_names)) {
-            temp <- data.frame(origin = attr(pkg_dep_dep, "package_name"), pkg_dep_dep)
-          } else {
-            temp <- data.frame(origin = character(), pkg_dep_dep)
-          }
+          data.frame(origin = pkg_name,
+                     pkg_subdep,
+                     origin_level = level - 1,
+                     dest_level = cb)
+        } else NULL
+      }))
 
-          ret <- rbind(ret, temp)
-        }
-      }
-
-      # save all package names that were already computed
-      already_computed_names <- union(already_computed_names, pkg_dep_dep_names)
-
-      # find all package names that were not computed yet
-      pkg_dep_names <- intersect(already_computed_names, pkg_dep_dep_names)
-      pkg_dep_dep_names <- c()
+      already_subdeped <- union(already_subdeped, to_subdep)
+      to_subdep <- setdiff(added$name, already_subdeped)
+      ret <- rbind(ret, added)
     }
   }
 

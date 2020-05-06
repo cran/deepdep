@@ -12,15 +12,15 @@ library(deepdep)
 
 ## ----get_ava_pkg1-------------------------------------------------------------
 t <- get_available_packages()
-head(t, 100)
+head(t, 20)
 
 ## ----get_ava_pkg2-------------------------------------------------------------
 t <- get_available_packages(bioc = TRUE)
-head(t, 100)
+head(t, 20)
 
 ## ----get_ava_pkg3-------------------------------------------------------------
 t <- get_available_packages(local = TRUE)
-head(t, 100)
+head(t, 20)
 
 ## ----get_description1---------------------------------------------------------
 get_description("DALEXtra")
@@ -53,7 +53,7 @@ plot_dependencies(dd, type = "tree")
 plot_dependencies(dd, same_level = TRUE)
 
 ## ----plot_dependencies4, fig.align='center', fig.width=7, fig.height=6, warning=FALSE----
-plot_dependencies("tidyverse", type = "circular", label_percentage = 0.2, downloads = TRUE, depth = 3)
+plot_dependencies("tidyverse", type = "circular", label_percentage = 0.2, depth = 3)
 
 ## ----plot_dependencies5, fig.align='center', fig.width=7, fig.height=6--------
 plot_dependencies(dd) +
