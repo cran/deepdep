@@ -1,24 +1,16 @@
 ---
 title: "Comparison of deepdep to similar packages"
 author: "Dominik Rafacz"
-date: "`r Sys.Date()`"
+date: "2021-03-31"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{deepdep comparison}
+  %\VignetteIndexEntry{Comparison of deepdep to similar packages}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.align = 'center', 
-  fig.width = 7, 
-  fig.height = 5
-)
-```
+
 
 # Comparison to other packages
 
@@ -29,7 +21,7 @@ This solutions are (with links to their GitHub repositories):
 * [datastorm-open/DependenciesGraphs](https://github.com/datastorm-open/DependenciesGraphs)
 * [uptake/pkgnet](https://github.com/uptake/pkgnet)
 * [andrie/miniCRAN](https://github.com/andrie/miniCRAN)
-* [Bioconductor/pkgDepTools](https://github.com/Bioconductor/pkgDepTools) 
+* [Bioconductor/pkgDepTools](https://github.com/Bioconductor/pkgDepTools)
 
 # General advantages of deepdep
 
@@ -37,7 +29,7 @@ First and foremost, our package is the only one that uses `ggplot2` and its enha
 
 Secondly, we are trying to keep plots clear and tidy. We're rather showing general structure of dependencies, their density and also show, which of the dependencies are the most crucial.
 
-At last, `deepdep` function is able to show levels of dependencies, which is not true for other packages listed here -- they either show only first-level dependencies or all possible dependencies 
+At last, `deepdep` function is able to show levels of dependencies, which is not true for other packages listed here -- they either show only first-level dependencies or all possible dependencies
 
 ---
 
@@ -62,7 +54,8 @@ This package allows creating interactive graphs (using `visNetwork`) to visualiz
 * There is no differentiation between levels of dependencies.
 * It is available only on GitHub
 
-```{r DependenciesGraphs, eval = FALSE}
+
+```r
 #> an example from the website on github.io
 library(devtools, quietly = TRUE)
 install_github("datastorm-open/DependenciesGraphs")
@@ -90,7 +83,8 @@ Tool for obtaining information on specified package, especially plotting network
 * You cannot do it with small steps -- you get all information at once, if you want only one specific thing, you need to dig through a lot of other informations.
 * You have to install the package to get info on it.
 
-```{r pkgnet, eval = FALSE}
+
+```r
 #> opens a report
 library(pkgnet)
 result <- CreatePackageReport('ggplot2')
@@ -110,17 +104,23 @@ From README.md on Github:
 ### Disadvantages:
 * No built-in package support for other plots than base. Which are not very pretty.
 
-```{r miniCRAN}
+
+```r
 #> an example from official vignette
 library(miniCRAN, quietly = TRUE)
 
 tags <- "chron"
 pkgDep(tags, availPkgs = cranJuly2014)
+#>  [1] "chron"        "RColorBrewer" "dichromat"    "munsell"      "plyr"         "labeling"     "colorspace"  
+#>  [8] "Rcpp"         "digest"       "gtable"       "reshape2"     "scales"       "proto"        "MASS"        
+#> [15] "stringr"      "ggplot2"
 
 dg <- makeDepGraph(tags, enhances = TRUE, availPkgs = cranJuly2014)
 set.seed(1)
 plot(dg, legendPosition = c(-1, 1), vertex.size = 20)
 ```
+
+<img src="miniCRAN-1.png" title="plot of chunk miniCRAN" alt="plot of chunk miniCRAN" style="display: block; margin: auto;" />
 # pkgDepTools
 
 Description from official vignette:
@@ -134,7 +134,7 @@ the RCurl package is available, estimating the download size required
 to install a given package and its dependencies.
 
 ### Advantages:
-* You can pass URL of any repositories, on the contrary to our function, which allows only CRAN, Bioconductor or locally installed packages, but as other repositories are not as commonly used. 
+* You can pass URL of any repositories, on the contrary to our function, which allows only CRAN, Bioconductor or locally installed packages, but as other repositories are not as commonly used.
 
 ### Disadvantages:
 * There is no possibility of downloading only a part of the packages. Each time you have to wait for the whole repository to be downloaded.
@@ -142,10 +142,11 @@ to install a given package and its dependencies.
 * Storage format is `graphNEL` -- not very commonly used and thus not so obvious to modify or adjust.
 * This package is pretty outdated. It was created when R was not so popular (and its repositories were quite small) and not modified much since then.
 
-```{r pkgDepTools, eval = FALSE}
+
+```r
 #> code not evaluated due to very long execution time
 library(pkgDepTools)
 library(Rgraphviz)
-graph <- makeDepGraph("http://cran.fhcrc.org", type="source") 
+graph <- makeDepGraph("http://cran.fhcrc.org", type="source")
 plot(graph)
 ```
