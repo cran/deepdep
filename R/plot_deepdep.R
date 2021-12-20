@@ -84,6 +84,7 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
   node2.name <- NULL
   name <- NULL
   layer <- NULL
+  label <- NULL
   
   # TODO: add boolean returns to check if packages are available
   if (!require_packages(c("ggplot2", "ggraph", "igraph", "graphlayouts"),
@@ -99,71 +100,60 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
     G <- igraph::set_vertex_attr(G, "name", value = attr(x, "package_name"))
     type <- "tree"
   } else {
-    if (show_version) {
-      x <- add_version_to_name(x)
-    }
-    if (show_downloads) {
-      x <- add_downloads_to_name(x)
-    }
     if (declutter) {
-      x <- x[x[["origin"]] == x[[1, "origin"]] |
-               x[["type"]] %in% match_dependency_type("strong"), ]
+      x <- deepdep_declutter(x)
     }
-    G <- igraph::graph_from_data_frame(x)
+    if (!same_level) {
+      x <- x[(x$origin_level != x$dest_level), ]
+    }
+    if (!reverse) {
+      x <- x[(x$origin_level <= x$dest_level), ]
+    }
+    vertices <- compile_vertex_data(
+      x, show_version, show_downloads, label_percentage
+    )
+    G <- igraph::graph_from_data_frame(x, vertices = vertices)
   }
   
   G <- add_layers_to_vertices(G, x)
-  if (!same_level) {
-    G <- delete_edges_within_layer(G)
-  }
-  if (!reverse) {
-    G <- delete_reverse_edges(G)
-  }
   
-  
-  # mark vertices to label
-  pkg_downloads <- unlist(x[!duplicated(x[["name"]]), "grand_total"])
-  # central node should always be labeled
-  igraph::V(G)$labeled <- c(TRUE, pkg_downloads >= quantile(pkg_downloads, probs = 1 - label_percentage))
-  labels <- levels(factor(igraph::E(G)$type))
-  
-  g <- switch(type,
-              tree = ggraph::ggraph(G, "tree") +
-                ggplot2::theme_void(),
-              circular = ggraph::ggraph(graph = G, layout = "focus", focus = 1) +
-                graphlayouts::draw_circle(use = "focus", max.circle = max(igraph::V(G)$layer), col = "#252525") +
-                ggplot2::theme_void() +
-                ggplot2::coord_fixed())
+  plt <- switch(type,
+                tree = ggraph::ggraph(G, "tree") +
+                  ggplot2::theme_void(),
+                circular = ggraph::ggraph(graph = G, layout = "focus", focus = 1) +
+                  graphlayouts::draw_circle(use = "focus", max.circle = max(igraph::V(G)$layer), col = "#252525") +
+                  ggplot2::theme_void() +
+                  ggplot2::coord_fixed())
   
   if (nrow(x) != 0) {
-    g <- g + ggraph::geom_edge_link(ggplot2::aes(end_cap = ggraph::label_rect(node2.name),
-                                                 start_cap = ggraph::label_rect(node1.name),
-                                                 edge_width = type,
-                                                 edge_linetype = type),
-                                    arrow = ggplot2::arrow(length = ggplot2::unit(0.5, 'lines'),
-                                                           ends = "first",
-                                                           type = "closed",
-                                                           angle = 16.6),
-                                    color = "#1f271b") +
+    plt <- plt + ggraph::geom_edge_link(ggplot2::aes(end_cap = ggraph::label_rect(node2.name),
+                                                     start_cap = ggraph::label_rect(node1.name),
+                                                     edge_width = type,
+                                                     edge_linetype = type),
+                                        arrow = ggplot2::arrow(length = ggplot2::unit(0.5, 'lines'),
+                                                               ends = "first",
+                                                               type = "closed",
+                                                               angle = 16.6),
+                                        color = "#1f271b") +
       ggraph::scale_edge_linetype_manual(values = get_edgelinetype_default_scale()) +
       ggraph::scale_edge_width_manual(values = get_edgewidth_default_scale()) +
       ggplot2::theme(legend.key.width = ggplot2::unit(3, "lines"))
   }
   
-  g <- g + ggraph::geom_node_point(ggplot2::aes(fill = factor(layer)),
-                                   size = 3, shape = 21, show.legend = FALSE) +
+  plt <- plt + ggraph::geom_node_point(ggplot2::aes(fill = factor(layer)),
+                                       size = 3, shape = 21, show.legend = FALSE) +
     ggraph::geom_node_label(data = function(g) g[g[, "labeled"], ],
-                            ggplot2::aes(label = name, fill = factor(layer)),
+                            ggplot2::aes(label = label, fill = factor(layer)),
                             show.legend = FALSE,
                             label.padding = ggplot2::unit(0.28, "lines")) +
     default_nodefill_scale(length(levels(factor(igraph::V(G)$layer))))
   if (show_stamp)
-    g <- g + ggplot2::labs(caption = paste0("Plot made with deepdep v",
-                                            packageVersion("deepdep"),
-                                            " on ", format(Sys.time(), usetz = FALSE)))
+    plt <- plt + ggplot2::labs(caption = paste0("Plot made with deepdep v",
+                                                packageVersion("deepdep"),
+                                                " on ", format(Sys.time(), usetz = FALSE)))
   
-  class(g) <- c(class(g), "deepdep_plot")
-  g
+  class(plt) <- c(class(plt), "deepdep_plot")
+  plt
 }
 
 #' @title Add layer property to graph vertices
@@ -171,30 +161,48 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
 #'
 #' @param G An \code{igraph} object.
 add_layers_to_vertices <- function(G, x) {
-  igraph::V(G)$layer <- c(0, x[match(igraph::V(G)$name[-1], x$name), "dest_level"])
+  igraph::V(G)$layer <- igraph::distances(G, 1, mode = "out")
   G
 }
 
-#' @title Remove edges on the same level
-#' @noRd
-#'
-#' @param G An \code{igraph} object.
-delete_edges_within_layer <- function(G) {
-  edges_to_delete <- igraph::E(G)[
-    igraph::head_of(G, igraph::E(G))$layer == igraph::tail_of(G, igraph::E(G))$layer
-  ]
-  igraph::delete_edges(G, edges_to_delete)
-}
-
-#' @title Remove edges that point from vertices on lower to higher level
-#' @noRd
-#'
-#' @param G An \code{igraph} object.
-delete_reverse_edges <- function(G) {
-  edges_to_delete <- igraph::E(G)[
-    igraph::head_of(G, igraph::E(G))$layer < igraph::tail_of(G, igraph::E(G))$layer
-  ]
-  igraph::delete_edges(G, edges_to_delete)
+compile_vertex_data <- function(x, version, downloads, label_percentage) {
+  vertices <- data.frame(
+    name = unique(c(attr(x, "package_name"), x[["name"]]))
+  )
+  vertices[["label"]] <- vertices[["name"]]
+  vertices[["version"]] <- vapply(
+    vertices[["name"]],
+    function(pkg) x[x[["name"]] == pkg, ][["version"]][1],
+    FUN.VALUE = character(1)
+  )
+  if (version) {
+    vertices[["label"]] <- ifelse(
+      is.na(vertices[["version"]]),
+      vertices[["label"]],
+      paste0(vertices[["label"]], "\n(", vertices[["version"]], ")")
+    )
+  }
+  if ("grand_total" %in% colnames(x)) {
+    vertices[["downloads"]] <- vapply(
+      vertices[["name"]],
+      function(pkg) x[x[["name"]] == pkg, ][["grand_total"]][1],
+      FUN.VALUE = numeric(1)
+    )
+  }
+  if (downloads) {
+    vertices[["label"]] <- ifelse(
+      is.na(vertices[["downloads"]]),
+      vertices[["label"]],
+      paste0(vertices[["label"]], "\n", vertices[["downloads"]])
+    )
+  }
+  vertices[["labeled"]] <- if (label_percentage < 1) {
+    # Central node should always be labeled
+    c(TRUE, is_top_perc(vertices[["downloads"]][-1], label_percentage))
+  } else {
+    TRUE
+  }
+  vertices
 }
 
 get_edgewidth_default_scale <- function() {
@@ -223,20 +231,4 @@ default_nodefill_scale <- function(num_colors) {
                                           "#7b5e7b",
                                           "#664e4c"))
   else ggplot2::scale_fill_discrete()
-}
-
-add_version_to_name <- function(x) {
-  tmp <- x[!duplicated(x$name), c("name", "version")]
-  nv <- ifelse(is.na(tmp$version), tmp$name, paste0(tmp$name, "\n(", tmp$version, ")"))
-  names(nv) <- tmp$name
-  x$name <- nv[x$name]
-  x
-}
-
-add_downloads_to_name <- function(x) {
-  tmp <- x[!duplicated(x$name), c("name", "grand_total")]
-  nv <- ifelse(is.na(tmp$grand_total), tmp$name, paste0(tmp$name, "\n", tmp$grand_total))
-  names(nv) <- tmp$name
-  x$name <- nv[x$name]
-  x
 }
