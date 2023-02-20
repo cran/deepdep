@@ -12,29 +12,42 @@
 
 <meta name="author" content="Dominik Rafacz" />
 
-<meta name="date" content="2021-12-19" />
+<meta name="date" content="2023-02-20" />
 
 <title>Comparison of deepdep to similar packages</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -52,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -109,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -127,7 +146,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -139,15 +338,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<h1 class="title toc-ignore">Comparison of deepdep to similar packages</h1>
+<h1 class="title toc-ignore">Comparison of deepdep to similar
+packages</h1>
 <h4 class="author">Dominik Rafacz</h4>
-<h4 class="date">2021-12-19</h4>
+<h4 class="date">2023-02-20</h4>
 
 
 
 <div id="comparison-to-other-packages" class="section level1">
 <h1>Comparison to other packages</h1>
-<p>There are a few already existing solutions to the problem of visualizing dependencies. In this last section, we will compare <code>deepdep</code> to those solutions.</p>
+<p>There are a few already existing solutions to the problem of
+visualizing dependencies. In this last section, we will compare
+<code>deepdep</code> to those solutions.</p>
 <p>This solutions are (with links to their GitHub repositories):</p>
 <ul>
 <li><a href="https://github.com/datastorm-open/DependenciesGraphs">datastorm-open/DependenciesGraphs</a></li>
@@ -158,30 +360,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="general-advantages-of-deepdep" class="section level1">
 <h1>General advantages of deepdep</h1>
-<p>First and foremost, our package is the only one that uses <code>ggplot2</code> and its enhancements, which is currently the most popular way of visualizing anything in R. You can easily modify plots generated with our package.</p>
-<p>Secondly, we are trying to keep plots clear and tidy. We’re rather showing general structure of dependencies, their density and also show, which of the dependencies are the most crucial.</p>
-<p>At last, <code>deepdep</code> function is able to show levels of dependencies, which is not true for other packages listed here – they either show only first-level dependencies or all possible dependencies</p>
+<p>First and foremost, our package is the only one that uses
+<code>ggplot2</code> and its enhancements, which is currently the most
+popular way of visualizing anything in R. You can easily modify plots
+generated with our package.</p>
+<p>Secondly, we are trying to keep plots clear and tidy. We’re rather
+showing general structure of dependencies, their density and also show,
+which of the dependencies are the most crucial.</p>
+<p>At last, <code>deepdep</code> function is able to show levels of
+dependencies, which is not true for other packages listed here – they
+either show only first-level dependencies or all possible
+dependencies</p>
 <hr />
-<p>In the following sections we’ll describe why our package is better in some aspects than others, but also features that we’re lacking.</p>
+<p>In the following sections we’ll describe why our package is better in
+some aspects than others, but also features that we’re lacking.</p>
 </div>
 <div id="dependenciesgraphs" class="section level1">
 <h1>DependenciesGraphs</h1>
-<p>This package allows creating interactive graphs (using <code>visNetwork</code>) to visualize dependencies between packages and also between functions in those packages.</p>
+<p>This package allows creating interactive graphs (using
+<code>visNetwork</code>) to visualize dependencies between packages and
+also between functions in those packages.</p>
 <div id="advantages" class="section level3">
 <h3>Advantages:</h3>
 <ul>
 <li>Interactivity is a great feature.</li>
 <li>Possibility of visualizing dependencies between functions.</li>
 <li>You can add multiple packages instead of one.</li>
-<li>Returned object is kept in a quite popular and easily modifiable format.</li>
+<li>Returned object is kept in a quite popular and easily modifiable
+format.</li>
 <li>You can run shiny app with the result.</li>
 </ul>
 </div>
 <div id="disadvantages" class="section level3">
 <h3>Disadvantages:</h3>
 <ul>
-<li>You have to have installed the package you want to visualize. It is not a great issue, because mostly you visualize your own packages, but if you would like to create some bigger example, including a lot of packages you haven’t installed, it may make a problem.</li>
-<li>Graph can get very messy easily and there is no built-in options to prevent it.</li>
+<li>You have to have installed the package you want to visualize. It is
+not a great issue, because mostly you visualize your own packages, but
+if you would like to create some bigger example, including a lot of
+packages you haven’t installed, it may make a problem.</li>
+<li>Graph can get very messy easily and there is no built-in options to
+prevent it.</li>
 <li>There is no differentiation between levels of dependencies.</li>
 <li>It is available only on GitHub</li>
 </ul>
@@ -199,11 +417,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="pkgnet" class="section level1">
 <h1>pkgnet</h1>
-<p>Tool for obtaining information on specified package, especially plotting network of package and function dependencies.</p>
+<p>Tool for obtaining information on specified package, especially
+plotting network of package and function dependencies.</p>
 <div id="advantages-1" class="section level3">
 <h3>Advantages</h3>
 <ul>
-<li>It has a fantastic function to automatically generating whole report or vignette on one package.</li>
+<li>It has a fantastic function to automatically generating whole report
+or vignette on one package.</li>
 <li>Interactive graphs – again using <code>visNetwork</code>.</li>
 <li>It is very convenient and verbose…</li>
 </ul>
@@ -212,7 +432,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3>Disadvantages</h3>
 <ul>
 <li>…maybe even too much. Sometimes you don’t need as much data.</li>
-<li>You cannot do it with small steps – you get all information at once, if you want only one specific thing, you need to dig through a lot of other informations.</li>
+<li>You cannot do it with small steps – you get all information at once,
+if you want only one specific thing, you need to dig through a lot of
+other informations.</li>
 <li>You have to install the package to get info on it.</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; opens a report</span></span>
@@ -224,7 +446,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1>miniCRAN</h1>
 <p>From README.md on Github:</p>
 <blockquote>
-<p>The <strong>miniCRAN</strong> package makes it possible to create an internally consistent repository consisting of selected packages from CRAN-like repositories. The user specifies a set of desired packages, and miniCRAN recursively reads the dependency tree for these packages, then downloads only this subset.</p>
+<p>The <strong>miniCRAN</strong> package makes it possible to create an
+internally consistent repository consisting of selected packages from
+CRAN-like repositories. The user specifies a set of desired packages,
+and miniCRAN recursively reads the dependency tree for these packages,
+then downloads only this subset.</p>
 </blockquote>
 <div id="advantages-2" class="section level3">
 <h3>Advantages:</h3>
@@ -238,7 +464,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="disadvantages-2" class="section level3">
 <h3>Disadvantages:</h3>
 <ul>
-<li>No built-in package support for other plots than base. Which are not very pretty.</li>
+<li>No built-in package support for other plots than base. Which are not
+very pretty.</li>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; an example from official vignette</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(miniCRAN, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
@@ -252,25 +479,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>dg <span class="ot">&lt;-</span> <span class="fu">makeDepGraph</span>(tags, <span class="at">enhances =</span> <span class="cn">TRUE</span>, <span class="at">availPkgs =</span> cranJuly2014)</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dg, <span class="at">legendPosition =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>), <span class="at">vertex.size =</span> <span class="dv">20</span>)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" title="plot of chunk miniCRAN" alt="plot of chunk miniCRAN" style="display: block; margin: auto;" /> # pkgDepTools</p>
+<p><img src="data:image/png;base64,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" alt="plot of chunk miniCRAN" style="display: block; margin: auto;" />
+# pkgDepTools</p>
 <p>Description from official vignette:</p>
 <blockquote>
-<p>The <strong>pkgDepTools</strong> package provides tools for computing and analysing dependency relationships among R packages. With it, you can build a graph-based representation of the dependencies among all packages in a list of CRAN-style package repositories. There are utilities for computing installation order of a given package and, if the RCurl package is available, estimating the download size required to install a given package and its dependencies.</p>
+<p>The <strong>pkgDepTools</strong> package provides tools for computing
+and analysing dependency relationships among R packages. With it, you
+can build a graph-based representation of the dependencies among all
+packages in a list of CRAN-style package repositories. There are
+utilities for computing installation order of a given package and, if
+the RCurl package is available, estimating the download size required to
+install a given package and its dependencies.</p>
 </blockquote>
 </div>
 <div id="advantages-3" class="section level3">
 <h3>Advantages:</h3>
 <ul>
-<li>You can pass URL of any repositories, on the contrary to our function, which allows only CRAN, Bioconductor or locally installed packages, but as other repositories are not as commonly used.</li>
+<li>You can pass URL of any repositories, on the contrary to our
+function, which allows only CRAN, Bioconductor or locally installed
+packages, but as other repositories are not as commonly used.</li>
 </ul>
 </div>
 <div id="disadvantages-3" class="section level3">
 <h3>Disadvantages:</h3>
 <ul>
-<li>There is no possibility of downloading only a part of the packages. Each time you have to wait for the whole repository to be downloaded.</li>
+<li>There is no possibility of downloading only a part of the packages.
+Each time you have to wait for the whole repository to be
+downloaded.</li>
 <li>You cannot choose type of dependencies “Enhances”.</li>
-<li>Storage format is <code>graphNEL</code> – not very commonly used and thus not so obvious to modify or adjust.</li>
-<li>This package is pretty outdated. It was created when R was not so popular (and its repositories were quite small) and not modified much since then.</li>
+<li>Storage format is <code>graphNEL</code> – not very commonly used and
+thus not so obvious to modify or adjust.</li>
+<li>This package is pretty outdated. It was created when R was not so
+popular (and its repositories were quite small) and not modified much
+since then.</li>
 </ul>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; code not evaluated due to very long execution time</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pkgDepTools)</span>

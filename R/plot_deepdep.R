@@ -142,10 +142,17 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
   
   plt <- plt + ggraph::geom_node_point(ggplot2::aes(fill = factor(layer)),
                                        size = 3, shape = 21, show.legend = FALSE) +
-    ggraph::geom_node_label(data = function(g) g[g[, "labeled"], ],
-                            ggplot2::aes(label = label, fill = factor(layer)),
-                            show.legend = FALSE,
-                            label.padding = ggplot2::unit(0.28, "lines")) +
+    ggraph::geom_node_label(
+      data = function(g) {
+        if (is.null(g[["labeled"]])) {
+          g$label <- character(nrow(g))
+          g
+        } else g[g[, "labeled"], ] 
+      },
+      ggplot2::aes(label = label, fill = factor(layer)),
+      show.legend = FALSE,
+      label.padding = ggplot2::unit(0.28, "lines")
+    ) +
     default_nodefill_scale(length(levels(factor(igraph::V(G)$layer))))
   if (show_stamp)
     plt <- plt + ggplot2::labs(caption = paste0("Plot made with deepdep v",
@@ -161,7 +168,7 @@ plot_dependencies.deepdep <- function(x, type = "circular", same_level = FALSE, 
 #'
 #' @param G An \code{igraph} object.
 add_layers_to_vertices <- function(G, x) {
-  igraph::V(G)$layer <- igraph::distances(G, 1, mode = "out")
+  igraph::V(G)$layer <- as.numeric(igraph::distances(G, 1, mode = "out"))
   G
 }
 
