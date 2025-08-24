@@ -1,6 +1,6 @@
-95542aece7c101ab2d5227b2a55ee58a *DESCRIPTION
+db506fc55b75dfd57fa74a31271e4a73 *DESCRIPTION
 c04ab5149abf166a39ee37a1ac3e70dc *NAMESPACE
-c245ee8b4639d9f961a442f8b8741b85 *NEWS.md
+e388776bb27f5229d27cc46acfd9c9fb *NEWS.md
 d11ff9991e37328908cbf3d65cc0b2d7 *R/api_utils.R
 031ecbff8fccb84da7c40a8047965d5e *R/cache_utils.R
 7854b811c658544b282a530f9340a55d *R/deepdep.R
@@ -15,12 +15,12 @@ d11ff9991e37328908cbf3d65cc0b2d7 *R/api_utils.R
 b193673d1eb7881dfbfa67ad0c798ae3 *R/print_package_description.R
 71e36d392159873affc59d1782f150f6 *R/require_packages.R
 e21819f4ec0d2be84ccc59e0fcfd585b *R/utils.R
-8b0049d0dfce183d727dc3c3a26365ae *build/vignette.rds
+58c42e4644f2ad9363f0dd6fc73320a5 *build/vignette.rds
 31c9e4cd884e5685c3da3afce8d323a4 *inst/WORDLIST
 dff910521c90db9f34e1008c26ab897f *inst/doc/deepdep-comparison.Rmd
-c92da2c23e2a342bd4417bb7bb5fd765 *inst/doc/deepdep-comparison.html
+6dbaf4101423b40b83bf067dd319f588 *inst/doc/deepdep-comparison.html
 81d0bf95debb373dfd14747664662159 *inst/doc/deepdep-package.Rmd
-636d104d99f45f0996ef83b43438c7f5 *inst/doc/deepdep-package.html
+bacefcb78236f57dd5e3dd8e538dabc8 *inst/doc/deepdep-package.html
 ad28fa8e1ce55c4e4120a409fb1ca93c *inst/shiny_app/server.R
 5b0202a2781e44b3cdbb14388f68f1d4 *inst/shiny_app/ui.R
 930ea3c73a6d060ef788fd9bf7eebdf1 *man/deepdep.Rd
@@ -48,7 +48,7 @@ f081d8ad5df5c28e795c3c1a70bf40ab *tests/fixtures/plot-dnl-1.yml
 0c5c24ffe8758895d6a78d9a12cf76e1 *tests/spelling.R
 63d08c8aa485d0c13bbc0a4083ba4744 *tests/testthat.R
 a2531888e93b04471825820a71eaca23 *tests/testthat/setup-deepdep.R
-7275330bfd632b8d9b90fc60cb818990 *tests/testthat/setup-vcr.R
+a4d0b3144f88df326901bf872f8fd329 *tests/testthat/setup-vcr.R
 eb10b39f20c20f31a697a57ba875eec5 *tests/testthat/test-deepdep.R
 4eba8271b20ba464772bdd8b3f65a521 *tests/testthat/test-deepdep_declutter.R
 f39413066bf8eb5e1564a8ac4bfce4b9 *tests/testthat/test-development.R

@@ -1,6 +1,6 @@
 Package: deepdep
 Title: Visualise and Explore the Deep Dependencies of R Packages
-Version: 0.4.3
+Version: 0.4.4
 Authors@R: c(person("Dominik", "Rafacz", email = "dominikrafacz@gmail.com",
                   role = c("aut", "cre"),
                   comment = c(ORCID = "0000-0003-0925-1909")),
@@ -28,12 +28,13 @@ URL: https://dominikrafacz.github.io/deepdep/,
 BugReports: https://github.com/DominikRafacz/deepdep/issues
 Language: en-GB
 NeedsCompilation: no
-Packaged: 2024-03-12 17:35:00 UTC; Dominik Rafacz
-Author: Dominik Rafacz [aut, cre] (<https://orcid.org/0000-0003-0925-1909>),
+Packaged: 2025-08-24 17:37:51 UTC; Dominik
+Author: Dominik Rafacz [aut, cre] (ORCID:
+    <https://orcid.org/0000-0003-0925-1909>),
   Hubert Baniecki [aut],
   Szymon Maksymiuk [aut],
   Laura Bakala [aut],
   Dirk Eddelbuettel [ctb]
 Maintainer: Dominik Rafacz <dominikrafacz@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-03-12 21:10:07 UTC
+Date/Publication: 2025-08-24 18:00:02 UTC
